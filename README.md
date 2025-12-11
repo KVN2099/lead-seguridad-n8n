@@ -56,9 +56,15 @@ git clone <url-del-repositorio>
 cd n8n-server
 ```
 
-### 2. Configurar variables de entorno (opcional)
+### 2. Configurar variables de entorno
 
-Crea un archivo `.env` en la raíz del proyecto para personalizar la configuración:
+Copia el archivo `.env.example` a `.env` y actualiza los valores según tus necesidades:
+
+```bash
+cp .env.example .env
+```
+
+Luego edita el archivo `.env` y actualiza las siguientes variables:
 
 ```env
 # Base de datos
@@ -73,7 +79,7 @@ N8N_USER=admin
 N8N_PASSWORD=tu_contraseña_segura
 ```
 
-Si no creas el archivo `.env`, se usarán los valores por defecto (no recomendado para producción).
+⚠️ **IMPORTANTE**: Actualiza el archivo `.env` con contraseñas seguras antes de iniciar los servicios. Si no creas el archivo `.env`, se usarán los valores por defecto (no recomendado para producción).
 
 ### 3. Iniciar los servicios
 
