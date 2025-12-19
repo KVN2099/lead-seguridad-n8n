@@ -1,6 +1,6 @@
 # Servidor n8n con Docker Compose
 
-Este repositorio contiene una configuración completa de Docker Compose para ejecutar **n8n**, una herramienta de automatización de flujos de trabajo de código abierto, junto con una base de datos PostgreSQL y un proxy inverso Nginx con características de seguridad.
+Este repositorio contiene una configuración completa de Docker Compose para ejecutar **n8n**, una herramienta de automatización de flujos de trabajo de código abierto, junto con una base de datos PostgreSQL y un proxy inverso Apache con características de seguridad.
 
 ## ¿Qué es n8n?
 
@@ -23,11 +23,11 @@ Este proyecto incluye tres servicios principales:
 - Puerto: 5678
 - Volúmenes para persistir datos y configuraciones
 
-### 3. **Nginx** (Proxy inverso y firewall)
+### 3. **Apache** (Proxy inverso y firewall)
 - Actúa como proxy inverso frente a n8n
 - Implementa medidas de seguridad:
   - Headers de seguridad HTTP
-  - Limitación de velocidad (rate limiting)
+  - Limitación de tamaño de peticiones
   - Bloqueo de endpoints sensibles
   - Soporte para WebSockets
 - Puertos: 80 (HTTP) y 443 (HTTPS, configurable)
@@ -36,7 +36,7 @@ Este proyecto incluye tres servicios principales:
 ## Características de Seguridad
 
 - **Autenticación básica**: Protección con usuario y contraseña
-- **Rate limiting**: Limita las solicitudes para prevenir abusos
+- **Límite de tamaño**: Limita el tamaño del cuerpo de las solicitudes para prevenir abusos
 - **Headers de seguridad**: Protección contra ataques comunes (XSS, clickjacking, etc.)
 - **Bloqueo de endpoints sensibles**: Restricción de acceso a rutas administrativas
 - **Health checks**: Monitoreo del estado de los servicios
@@ -94,7 +94,7 @@ Este comando iniciará los tres servicios en segundo plano.
 Una vez que los servicios estén en ejecución, puedes acceder a n8n a través de:
 
 - **Directamente**: http://localhost:5678
-- **A través del proxy Nginx**: http://localhost:80
+- **A través del proxy Apache**: http://localhost:80
 
 ### 5. Verificar el estado de los servicios
 
@@ -122,11 +122,9 @@ Para habilitar HTTPS:
    - `cert.pem` (certificado)
    - `key.pem` (clave privada)
 
-2. Descomenta y configura la sección HTTPS en `nginx.conf` (líneas 117-130)
+2. Configura un bloque `<VirtualHost *:443>` en `apache2.conf` con la configuración SSL necesaria y descomenta el módulo `mod_ssl`.
 
-3. Descomenta la redirección HTTP a HTTPS (líneas 43-48 en `nginx.conf`)
-
-4. Reinicia los servicios:
+3. Reinicia los servicios:
 
 ```bash
 docker-compose restart firewall
@@ -137,7 +135,7 @@ docker-compose restart firewall
 ```
 n8n-server/
 ├── docker-compose.yml    # Configuración de los servicios Docker
-├── nginx.conf            # Configuración del proxy inverso Nginx
+├── apache2.conf          # Configuración del proxy inverso Apache
 ├── certs/                # Directorio para certificados SSL (opcional)
 ├── .env                  # Variables de entorno (crear manualmente)
 ├── .gitignore            # Archivos ignorados por Git
@@ -186,9 +184,9 @@ docker-compose up -d n8n
 - Asegúrate de que PostgreSQL esté completamente iniciado (usa healthcheck)
 - Verifica las credenciales en las variables de entorno
 
-### Problemas con Nginx
-- Verifica que el archivo `nginx.conf` esté correctamente configurado
-- Revisa los logs de Nginx: `docker-compose logs firewall`
+### Problemas con Apache
+- Verifica que el archivo `apache2.conf` esté correctamente configurado
+- Revisa los logs de Apache: `docker-compose logs firewall`
 
 ## Notas de Seguridad
 
@@ -208,5 +206,5 @@ Este proyecto es de código abierto. n8n tiene su propia licencia (ver [n8n.io](
 
 - [Documentación oficial de n8n](https://docs.n8n.io/)
 - [Documentación de Docker Compose](https://docs.docker.com/compose/)
-- [Documentación de Nginx](https://nginx.org/en/docs/)
+- [Documentación de Apache HTTP Server](https://httpd.apache.org/docs/)
 
